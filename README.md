@@ -42,6 +42,10 @@ npm run build      # prebuild migrates + seeds, then builds the static site
 npm run preview
 ```
 
+The game listing is statically paginated to six games per page. The first page is
+available at `/`, and later pages use routes such as `/page/2`; navigation links
+are generated only for pages that contain games.
+
 ## Database
 
 The SQLite database is built from `db/games.csv` — there is no live data to migrate.
@@ -72,6 +76,15 @@ npm run lint
 ```
 
 ESLint is also run automatically in CI on pull requests to `main`.
+
+## Coding standards
+
+The repository's cross-cutting coding standards are documented in
+[`coding-standards.instructions.md`](.github/instructions/coding-standards.instructions.md).
+They explain how to write intent-focused comments, document exported data-layer
+functions and reusable Astro component props, and format TypeScript. ESLint
+enforces the mechanical formatting rules; code review verifies the documentation
+and intent requirements.
 
 ## Type checking
 
