@@ -24,4 +24,26 @@ test.describe('Home Page', () => {
     // Check that the welcome message is present using more specific locator
     await expect(page.getByText('Find your next game! And maybe even back one! Explore our collection!')).toBeVisible();
   });
+
+  test('should filter games by category and publisher combination', async ({ page }) => {
+    await test.step('Pick a category and publisher combination', async () => {
+      await page.getByRole('checkbox', { name: 'Strategy' }).check();
+      await page.getByRole('checkbox', { name: 'Puzzle' }).check();
+      await page.getByRole('combobox', { name: 'Publisher' }).selectOption({ label: 'CodeForge Studios' });
+      await page.getByTestId('apply-filters-button').click();
+    });
+
+    await test.step('Verify matching filter state is reflected in the URL and cards', async () => {
+      const url = page.url();
+      expect(url).toContain('publisher=CodeForge+Studios');
+      expect(url).toContain('category=Puzzle');
+      expect(url).toContain('category=Strategy');
+
+      const visibleCards = page.locator('[data-testid="game-card"]:visible');
+      await expect(visibleCards).toHaveCount(2);
+      await expect(page.getByRole('link', { name: 'DevOps Dominion' })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Code Puzzle Chronicles' })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Pipeline Conquest' })).toBeHidden();
+    });
+  });
 });
