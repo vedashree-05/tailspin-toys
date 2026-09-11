@@ -3,12 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import GameCard from '../components/GameCard.astro';
 import PageHero from '../components/PageHero.astro';
 import EmptyState from '../components/EmptyState.astro';
+import Pagination from '../components/Pagination.astro';
 import { getDatabase } from '../lib/db';
-import { getAllGames } from '../lib/games';
+import { getGamesPage } from '../lib/games';
+import { PAGE_SIZE } from '../lib/pagination';
 
 export const prerender = true;
 
-const games = await getAllGames(getDatabase());
+const result = await getGamesPage(getDatabase(), 1, PAGE_SIZE);
 ---
 
 <Layout title="Tailspin Toys - Crowdfunding your new favorite game!">
@@ -19,15 +21,19 @@ const games = await getAllGames(getDatabase());
     />
 
     <div>
-      <h2 class="text-2xl font-medium mb-6 text-slate-100">Featured Games</h2>
+      <h2 class="mb-6 text-2xl font-medium text-slate-100">Featured Games</h2>
 
-      {games.length === 0 ? (
+      {result.games.length === 0 ? (
         <EmptyState text="No games available at the moment." />
       ) : (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="games-grid">
-          {games.map((game) => <GameCard game={game} />)}
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-testid="games-grid">
+          {result.games.map((game) => <GameCard game={game} />)}
         </div>
       )}
+
+      <div class="mt-8">
+        <Pagination currentPage={result.page} totalPages={result.totalPages} />
+      </div>
     </div>
   </div>
 </Layout>
